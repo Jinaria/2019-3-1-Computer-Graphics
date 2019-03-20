@@ -28,35 +28,39 @@ def render(T):
 def key_callback(window, key, scancode, action, mods):
     global new_M
     global g_composed_M
-    if key == glfw.KEY_W and action == glfw.PRESS:
+
+    if action is not glfw.PRESS:
+        return
+
+    if key == glfw.KEY_W:
         new_M = np.array([[.9, 0., 0.],
                           [0., 1., 0.],
                           [0., 0., 1.]])
-    elif key == glfw.KEY_E and action == glfw.PRESS:
+    elif key == glfw.KEY_E:
         new_M = np.array([[1.1, 0., 0.],
                           [0.,  1., 0.],
                           [0.,  0., 1.]])
-    elif key == glfw.KEY_S and action == glfw.PRESS:
+    elif key == glfw.KEY_S:
         new_M = np.array([[np.cos(np.radians(10)), -np.sin(np.radians(10)), 0.],
                           [np.sin(np.radians(10)), np.cos(np.radians(10)),  0.],
                           [0.,                     0.,                      1.]])
-    elif key == glfw.KEY_D and action == glfw.PRESS:
+    elif key == glfw.KEY_D:
         new_M = np.array([[np.cos(np.radians(-10)), -np.sin(np.radians(-10)), 0.],
                           [np.sin(np.radians(-10)), np.cos(np.radians(-10)),  0.],
                           [0.,                     0.,                      1.]])
-    elif key == glfw.KEY_X and action == glfw.PRESS:
+    elif key == glfw.KEY_X:
         new_M = np.array([[1., -0.1, 0.],
                           [0., 1., 0.],
                           [0., 0., 1.]])
-    elif key == glfw.KEY_C and action == glfw.PRESS:
+    elif key == glfw.KEY_C:
         new_M = np.array([[1., 0.1, 0.],
                           [0., 1., 0.],
                           [0., 0., 1.]])
-    elif key == glfw.KEY_R and action == glfw.PRESS:
+    elif key == glfw.KEY_R:
         new_M = np.array([[1., 0., 0.],
                           [0., -1., 0.],
                           [0., 0., 1.]])
-    elif key == glfw.KEY_1 and action == glfw.PRESS:
+    elif key == glfw.KEY_1:
         g_composed_M = new_M = np.array([[1., 0., 0.],
                           [0., 1., 0.],
                           [0., 0., 1.]])
