@@ -2,12 +2,8 @@ import numpy as np
 import glfw
 from OpenGL.GL import *
 
-new_M = np.array([[1., 0., 0.],
-                 [0., 1., 0.],
-                         [0., 0., 1.]])
-g_composed_M = np.array([[1., 0., 0.],
-                         [0., 1., 0.],
-                         [0., 0., 1.]])
+new_M = np.identity(3)
+g_composed_M = np.identity(3)
 
 def render(T):
     glClear(GL_COLOR_BUFFER_BIT)
@@ -34,12 +30,12 @@ def key_callback(window, key, scancode, action, mods):
     global g_composed_M
     if key == glfw.KEY_W and action == glfw.PRESS:
         new_M = np.array([[.9, 0., 0.],
-                                 [0., 1., 0.],
-                                 [0., 0., 1.]])
+                          [0., 1., 0.],
+                          [0., 0., 1.]])
     elif key == glfw.KEY_E and action == glfw.PRESS:
         new_M = np.array([[1.1, 0., 0.],
-                                 [0.,  1., 0.],
-                                 [0.,  0., 1.]])
+                          [0.,  1., 0.],
+                          [0.,  0., 1.]])
     elif key == glfw.KEY_S and action == glfw.PRESS:
         new_M = np.array([[np.cos(np.radians(10)), -np.sin(np.radians(10)), 0.],
                           [np.sin(np.radians(10)), np.cos(np.radians(10)),  0.],
@@ -65,9 +61,7 @@ def key_callback(window, key, scancode, action, mods):
                           [0., 1., 0.],
                           [0., 0., 1.]])
     else:
-        new_M = np.array([[1., 0., 0.],
-                          [0., 1., 0.],
-                          [0., 0., 1.]])
+        new_M = np.identity(3)
     g_composed_M = new_M @ g_composed_M
 
 def main():
