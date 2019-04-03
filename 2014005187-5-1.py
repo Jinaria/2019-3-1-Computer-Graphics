@@ -22,14 +22,16 @@ def render(M):
 	# draw point p
 	glBegin(GL_POINTS)
 	# your implementation
-	glVertex2fv((M @ np.array([.5, 0., 1.]))[:2])
+	p = np.array([.5, 0., 1.])
+	glVertex2fv((M @ p)[:2])
 	glEnd()
 
 	# draw vector v
 	glBegin(GL_LINES)
 	# your implementation
+	v = np.array([0.5, 0., 0.])
 	glVertex2fv(np.array([0., 0., 0.])[:2])
-	glVertex2fv((M @ np.array([.5, 0., 0.]))[:2])
+	glVertex2fv((M @ v)[:2])
 	glEnd()
 
 def main():
