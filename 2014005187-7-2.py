@@ -46,6 +46,7 @@ def drawTriangle_glDrawElements():
     glEnableClientState(GL_VERTEX_ARRAY)
     glVertexPointer(3, GL_FLOAT, 3 * varr.itemsize, varr)
     glDrawElements(GL_TRIANGLES, iarr.size, GL_UNSIGNED_INT, iarr)
+    print(iarr.size)
 
 
 def drawFrame():
