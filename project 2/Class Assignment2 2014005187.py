@@ -45,68 +45,73 @@ def drop_callback(window, paths):
     varr = None
     narr = None
     initVar()
+    objData = None
+    vnum = 0
+    nnum = 0
+    inum = 0
     if paths[0][-4:] == ".obj":
         with open(paths[0], 'r') as f:
-            while True:
-                data = f.readline()
-                if not data:
-                    break
-                data = data.split()
-                # print(data)
-                if not data:
-                    continue
-                if data[0] is 'v':
-                    d = [0., 0., 0., 0.]
-                    for i in range(1, 4):
-                        d[i] = float(data[i])
-                    if varr is None:
-                        varr = np.array([d[1:]], 'float32')
-                    else:
-                        varr = np.concatenate((varr, np.array([d[1:]])), axis = 0)
-                elif data[0] == "vn":
-                    d = [0., 0., 0., 0.]
-                    for i in range(1, 4):
-                        d[i] = float(data[i])
-                    if narr is None:
-                        narr = np.array([d[1:]], 'float32')
-                    else:
-                        narr = np.concatenate((narr, np.array([d[1:]])), axis = 0)
-                elif data[0] is 'f':
-                    for i in range(1, 4):
-                        data[i] = data[i].split('/')
-                    if gIarr is None:
-                        gIarr = np.array([data[1:4]])
-                    else:
-                        gIarr = np.concatenate((gIarr, np.array([data[1:4]])), axis = 0)
-        vnlist = np.array([[0., 0., 0.]])
-        secondVertex = varr
-        for i in range(len(varr) - 1):
-            vnlist = np.concatenate((vnlist, np.array([[0., 0., 0.]])), axis = 0)
-        tiarr = None
-        for t in gIarr:
-            a = []
-            for k in range(3):
-                a.append(int(t[k][0]) - 1)
-                vnlist[int(t[k][0]) - 1] += narr[int(t[k][2]) - 1]
-                if gNarr is None:
-                    gNarr = np.array([narr[int(t[k][2]) - 1]])
-                else:
-                    gNarr = np.concatenate((gNarr, np.array([narr[int(t[k][2]) - 1]])), axis = 0)
-                if gVarr is None:
-                    gVarr = np.array([varr[int(t[k][0]) - 1]])
-                else:
-                    gVarr = np.concatenate((gVarr, np.array([varr[int(t[k][0]) - 1]])), axis = 0)
-            if tiarr is None:
-                tiarr = np.array([a])
-            else:
-                tiarr = np.concatenate((tiarr, np.array([a])), axis = 0)
-        firstVertex = gVarr
+            objData = f.read()
+        objData = objData.split('\n')
+        idx = 0
+        for data in objData:
+            if not data:
+                idx += 1
+                continue
+            objData[idx] = data.split()
+            if not objData[idx]:
+                continue
+            if objData[idx][0] == 'v':
+                vnum += 1
+            elif objData[idx][0] == 'vn':
+                nnum += 1
+            elif objData[idx][0] == 'f':
+                inum += 1
+            idx += 1
+        varr = np.zeros([vnum, 3])
+        narr = np.zeros([nnum, 3])
+        gIarr = np.zeros([inum, 3, 2])
+        gNarr = np.zeros([inum * 3, 3])
+        gVarr = np.zeros([inum * 3, 3])
+        vnum = nnum = inum = 0
         
+        for data in objData:
+            if not data:
+                continue
+            if data[0] == 'v':
+                for i in range(1, 4):
+                    varr[vnum, i - 1] = float(data[i])
+                vnum += 1
+            elif data[0] == "vn":
+                for i in range(1, 4):
+                    narr[nnum, i - 1] = float(data[i])
+                nnum += 1
+            elif data[0] == 'f':
+                for i in range(1, 4):
+                    gIarr[inum, i - 1] = data[i].split('/')[0:3:2]
+                # print(gIarr[inum])
+                inum += 1
+        vnlist = np.zeros([vnum, 3])
+        secondVertex = varr
+        idx = 0
+        for t in gIarr:
+            for k in range(3):
+                vnlist[int(t[k][0]) - 1] += narr[int(t[k][1]) - 1]
+                gNarr[idx] = narr[int(t[k][1]) - 1]
+                gVarr[idx] = varr[int(t[k][0]) - 1]
+                idx += 1
+        firstVertex = gVarr
+        idx = 0
+        tiarr = np.zeros([inum, 3])
+        for i in gIarr:
+            for j in range(0, 3):
+                tiarr[idx, j] = int(i[j, 0] - 1)
+            idx += 1
+        gIarr = tiarr
         for i in range(len(vnlist)):
             vnlist[i] = vnlist[i] / np.sqrt(np.dot(vnlist[i], vnlist[i]))
         firstShading = gNarr
         secondShading = vnlist
-        gIarr = tiarr
         print("file name : " + paths[0])
         print("total num of faces : " + str(len(gIarr)))
         if not shadeFlag:
@@ -165,7 +170,7 @@ def scroll_callback(window, xoffset, yoffset):
     dist = dist - yoffset * dist * 0.08
 
 def key_callback(window, key, scancode, action, mods):
-    global gPolygonMode, shadeFlag, gVarr, gNarr, firstShading, secondShading, firstVertex, secondVertex
+    global gPolygonMode, shadeFlag, gVarr, gNarr, firstShading, secondShading, firstVertex, secondVertex, gIarr
     if action == glfw.PRESS:
         if key == glfw.KEY_Z:
             if gPolygonMode == GL_LINE:
