@@ -96,8 +96,8 @@ def drop_callback(window, paths):
                 snum = cnt
                 break
             cnt += 1
-        gOffset = gFirstOffset
-        gRotation = gFirstRotation
+        
+        
         gHierarchy = objData[:snum]
         gMotion = objData[snum:]
         cnt = 3
@@ -109,9 +109,12 @@ def drop_callback(window, paths):
             gMotion[cnt] = [gMotion[cnt][i:i+3] for i in range(0, len(gMotion[cnt]), 3)]
             cnt += 1
         gMotion = gMotion[3:]
+        gFirstOffset = np.array(gFirstOffset)
         gSecondOffset = copy.deepcopy(gFirstOffset)
         gSecondOffset[0] = gMotion[0][0]
         gSecondRotation = gMotion[0][1:]
+        gOffset = gFirstOffset
+        gRotation = gFirstRotation
         
         print("file name: " + paths[0])
         print("number of frames: " + str(numOfFrames))
@@ -203,35 +206,35 @@ def drawPlane():
 
 def drawCube():
     glBegin(GL_QUADS)
-    glVertex3f(1., 1., -1.)
-    glVertex3f(-1., 1., -1.)
-    glVertex3f(-1., 1., 1.)
-    glVertex3f(1., 1., 1.)  
+    glVertex3f(1., 1., 0.)
+    glVertex3f(-1., 1., 0.)
+    glVertex3f(-1., 1., 2.)
+    glVertex3f(1., 1., 2.)  
 
-    glVertex3f(1., -1., 1.)
-    glVertex3f(-1., -1., 1.)
-    glVertex3f(-1., -1., -1.)
-    glVertex3f(1., -1., -1.)
+    glVertex3f(1., -1., 2.)
+    glVertex3f(-1., -1., 2.)
+    glVertex3f(-1., -1., 0.)
+    glVertex3f(1., -1., 0.)
 
-    glVertex3f(1., 1., 1.)
-    glVertex3f(-1., 1., 1.)
-    glVertex3f(-1., -1., 1.)
-    glVertex3f(1., -1., 1.)
+    glVertex3f(1., 1., 2.)
+    glVertex3f(-1., 1., 2.)
+    glVertex3f(-1., -1., 2.)
+    glVertex3f(1., -1., 2.)
 
-    glVertex3f(1., -1., -1.)
-    glVertex3f(-1., -1., -1.)
-    glVertex3f(-1., 1., -1.)
-    glVertex3f(1., 1., -1.)
+    glVertex3f(1., -1., 0.)
+    glVertex3f(-1., -1., 0.)
+    glVertex3f(-1., 1., 0.)
+    glVertex3f(1., 1., 0.)
 
-    glVertex3f(-1., 1., 1.)
-    glVertex3f(-1., 1., -1.)
-    glVertex3f(-1., -1., -1.)
-    glVertex3f(-1., -1., 1.)
+    glVertex3f(-1., 1., 2.)
+    glVertex3f(-1., 1., 0.)
+    glVertex3f(-1., -1., 0.)
+    glVertex3f(-1., -1., 2.)
 
-    glVertex3f(1., 1., -1.)
-    glVertex3f(1., 1., 1.)
-    glVertex3f(1., -1., 1.)
-    glVertex3f(1., -1., -1.)
+    glVertex3f(1., 1., 0.)
+    glVertex3f(1., 1., 2.)
+    glVertex3f(1., -1., 2.)
+    glVertex3f(1., -1., 0.)
 
     glEnd()
 
@@ -268,14 +271,14 @@ def animate():
     if gOffset is gFirstOffset:
         pass
     elif gOffset is gSecondOffset:
-        newt = glfw.get_time()
-        if newt - oldt > frameTime:
-            currentFrame += 1
-            if currentFrame >= numOfFrames:
-                currentFrame = 0
-            gSecondOffset[0] = gMotion[currentFrame][0]
-            gRotation = gMotion[currentFrame][1:]
-            oldt = newt
+        # newt = glfw.get_time()
+        # if newt - oldt > frameTime:
+        currentFrame += 1
+        if currentFrame >= numOfFrames:
+            currentFrame = 0
+        gSecondOffset[0] = gMotion[currentFrame][0]
+        gRotation = gMotion[currentFrame][1:]
+        # oldt = newt
 
 def rotate(angle, num):
     global angleOrder
@@ -285,6 +288,11 @@ def rotate(angle, num):
         cnt += 1
     # print(angleOrder)
 
+def drawCubeBody(offset):
+    glPushMatrix()
+    glScalef(offset[0], offset[1], offset[2])
+    drawCube()
+    glPopMatrix()
 
 def drawDrop():
     global gHierarchy, gMotion, gOffset, gRotation
@@ -306,17 +314,23 @@ def drawDrop():
             elif line[0] == "End":
                 a = 2
             elif line[0] == "OFFSET":
+                # b = gOffset[tcnt] / 2
                 if a == 0:
                     glTranslatef(gOffset[tcnt][0], gOffset[tcnt][1], gOffset[tcnt][2])
                     rotate(gRotation[rcnt], rcnt)
                     rcnt += 1
                 elif a == 1:
+                    # glTranslatef(b[0], b[1], b[2])
                     drawLine(gOffset[tcnt])
+                    # drawCubeBody(b)
+                    # glTranslatef(b[0], b[1], b[2])
                     glTranslatef(gOffset[tcnt][0], gOffset[tcnt][1], gOffset[tcnt][2])
                     rotate(gRotation[rcnt], rcnt)
                     rcnt += 1
                 elif a == 2:
                     drawLine(gOffset[tcnt])
+                    
+                    # drawCubeBody(b)
                 tcnt += 1
             
         
@@ -393,7 +407,7 @@ def render():
     global targetPoint, gAzimuth, gElevation, dist
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glEnable(GL_DEPTH_TEST)
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity( )
@@ -409,6 +423,7 @@ def render():
     lightingSystem()
     animate()
     drawDrop()
+    # drawCube()
 
     
 def main():
