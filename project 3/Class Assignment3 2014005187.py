@@ -17,6 +17,8 @@ dist = 15.0
 w = None
 u = None
 v = None
+up = np.array([0, 1, 0])
+
 
 # drop global variable
 gHierarchy = None
@@ -204,39 +206,88 @@ def drawPlane():
         drawLines(0, i - 5)
         drawLines(1, i - 5)
 
-def drawCube():
+def drawCube(point):
+    global up
+    p = np.array(point)
+    p1 = np.cross(p, up)
+    p1 = (p1 / np.sqrt(np.dot(p1, p1))) * 0.02
+    p2 = np.cross(p1, p)
+    p2 = (p2 / np.sqrt(np.dot(p2, p2))) * 0.02
+    p3 = p1 * -1
+    p4 = p2 * -1
+    p5 = p1 + p
+    p6 = p2 + p
+    p7 = p3 + p
+    p8 = p4 + p
+
     glBegin(GL_QUADS)
-    glVertex3f(1., 1., 0.)
-    glVertex3f(-1., 1., 0.)
-    glVertex3f(-1., 1., 2.)
-    glVertex3f(1., 1., 2.)  
+    glVertex3fv(p1)
+    glVertex3fv(p2)
+    glVertex3fv(p3)
+    glVertex3fv(p4)
 
-    glVertex3f(1., -1., 2.)
-    glVertex3f(-1., -1., 2.)
-    glVertex3f(-1., -1., 0.)
-    glVertex3f(1., -1., 0.)
+    glVertex3fv(p8)
+    glVertex3fv(p7)
+    glVertex3fv(p6)
+    glVertex3fv(p5)
 
-    glVertex3f(1., 1., 2.)
-    glVertex3f(-1., 1., 2.)
-    glVertex3f(-1., -1., 2.)
-    glVertex3f(1., -1., 2.)
+    glVertex3fv(p4)
+    glVertex3fv(p8)
+    glVertex3fv(p5)
+    glVertex3fv(p1)
+    
+    glVertex3fv(p2)
+    glVertex3fv(p6)
+    glVertex3fv(p7)
+    glVertex3fv(p3)
 
-    glVertex3f(1., -1., 0.)
-    glVertex3f(-1., -1., 0.)
-    glVertex3f(-1., 1., 0.)
-    glVertex3f(1., 1., 0.)
 
-    glVertex3f(-1., 1., 2.)
-    glVertex3f(-1., 1., 0.)
-    glVertex3f(-1., -1., 0.)
-    glVertex3f(-1., -1., 2.)
+    glVertex3fv(p3)
+    glVertex3fv(p7)
+    glVertex3fv(p8)
+    glVertex3fv(p4)    
 
-    glVertex3f(1., 1., 0.)
-    glVertex3f(1., 1., 2.)
-    glVertex3f(1., -1., 2.)
-    glVertex3f(1., -1., 0.)
+    glVertex3fv(p1)
+    glVertex3fv(p5)
+    glVertex3fv(p6)
+    glVertex3fv(p2)
+
 
     glEnd()
+
+# def drawCube():
+#     glBegin(GL_QUADS)
+#     glVertex3f(1., 1., 0.)
+#     glVertex3f(-1., 1., 0.)
+#     glVertex3f(-1., 1., 2.)
+#     glVertex3f(1., 1., 2.)  
+
+#     glVertex3f(1., -1., 2.)
+#     glVertex3f(-1., -1., 2.)
+#     glVertex3f(-1., -1., 0.)
+#     glVertex3f(1., -1., 0.)
+
+#     glVertex3f(1., 1., 2.)
+#     glVertex3f(-1., 1., 2.)
+#     glVertex3f(-1., -1., 2.)
+#     glVertex3f(1., -1., 2.)
+
+#     glVertex3f(1., -1., 0.)
+#     glVertex3f(-1., -1., 0.)
+#     glVertex3f(-1., 1., 0.)
+#     glVertex3f(1., 1., 0.)
+
+#     glVertex3f(-1., 1., 2.)
+#     glVertex3f(-1., 1., 0.)
+#     glVertex3f(-1., -1., 0.)
+#     glVertex3f(-1., -1., 2.)
+
+#     glVertex3f(1., 1., 0.)
+#     glVertex3f(1., 1., 2.)
+#     glVertex3f(1., -1., 2.)
+#     glVertex3f(1., -1., 0.)
+
+#     glEnd()
 
 def drawSphere(numLats = 12, numLongs = 12):
     for i in range(0, numLats + 1):
@@ -288,12 +339,6 @@ def rotate(angle, num):
         cnt += 1
     # print(angleOrder)
 
-def drawCubeBody(offset):
-    glPushMatrix()
-    glScalef(offset[0], offset[1], offset[2])
-    drawCube()
-    glPopMatrix()
-
 def drawDrop():
     global gHierarchy, gMotion, gOffset, gRotation
     if gHierarchy is None:
@@ -314,23 +359,19 @@ def drawDrop():
             elif line[0] == "End":
                 a = 2
             elif line[0] == "OFFSET":
-                # b = gOffset[tcnt] / 2
                 if a == 0:
                     glTranslatef(gOffset[tcnt][0], gOffset[tcnt][1], gOffset[tcnt][2])
                     rotate(gRotation[rcnt], rcnt)
                     rcnt += 1
                 elif a == 1:
-                    # glTranslatef(b[0], b[1], b[2])
                     drawLine(gOffset[tcnt])
-                    # drawCubeBody(b)
-                    # glTranslatef(b[0], b[1], b[2])
+                    # drawCube(gOffset[tcnt])
                     glTranslatef(gOffset[tcnt][0], gOffset[tcnt][1], gOffset[tcnt][2])
                     rotate(gRotation[rcnt], rcnt)
                     rcnt += 1
                 elif a == 2:
                     drawLine(gOffset[tcnt])
-                    
-                    # drawCubeBody(b)
+                    # drawCube(gOffset[tcnt])
                 tcnt += 1
             
         
@@ -410,7 +451,7 @@ def render():
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     
     glMatrixMode(GL_PROJECTION)
-    glLoadIdentity( )
+    glLoadIdentity()
     gluPerspective(45, 1, 1, 1000)
     
     cameraWork()
@@ -420,10 +461,11 @@ def render():
     drawPlane()
  
     # lighting system
-    lightingSystem()
+    # lightingSystem()
+    glColor3ub(255, 255, 255)
     animate()
     drawDrop()
-    # drawCube()
+    # drawCube([2, 3, 4])
 
     
 def main():
