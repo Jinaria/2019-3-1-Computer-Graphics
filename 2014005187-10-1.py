@@ -239,7 +239,7 @@ def render(ang):
     rv2 = log(R2)   # in rotation vector
 
     # t is repeatedly increasing from 0.0 to 1.0
-    t = (ang % 90) / 90.
+    t = (ang % 90) / 90 * 0.5
 
     M = np.identity(4)
 

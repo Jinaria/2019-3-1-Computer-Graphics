@@ -268,8 +268,8 @@ def key_callback(window, key, scancode, action, mods):
     #         gCamHeight += .1
     #     elif key==glfw.KEY_W:
     #         gCamHeight += -.1
-
-        elif key==glfw.KEY_A:
+    if action==glfw.PRESS or action==glfw.REPEAT:
+        if key==glfw.KEY_A:
             gAlpha += 10
         elif key==glfw.KEY_Z:
             gAlpha -= 10

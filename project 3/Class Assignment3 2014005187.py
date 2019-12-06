@@ -364,14 +364,14 @@ def drawDrop():
                     rotate(gRotation[rcnt], rcnt)
                     rcnt += 1
                 elif a == 1:
-                    drawLine(gOffset[tcnt])
-                    # drawCube(gOffset[tcnt])
+                    # drawLine(gOffset[tcnt])
+                    drawCube(gOffset[tcnt])
                     glTranslatef(gOffset[tcnt][0], gOffset[tcnt][1], gOffset[tcnt][2])
                     rotate(gRotation[rcnt], rcnt)
                     rcnt += 1
                 elif a == 2:
-                    drawLine(gOffset[tcnt])
-                    # drawCube(gOffset[tcnt])
+                    # drawLine(gOffset[tcnt])
+                    drawCube(gOffset[tcnt])
                 tcnt += 1
             
         
@@ -461,8 +461,8 @@ def render():
     drawPlane()
  
     # lighting system
-    # lightingSystem()
-    glColor3ub(255, 255, 255)
+    lightingSystem()
+    # glColor3ub(255, 255, 255)
     animate()
     drawDrop()
     # drawCube([2, 3, 4])

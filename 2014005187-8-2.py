@@ -70,6 +70,7 @@ def render():
     global gCamAng, gCamHeight
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
     glEnable(GL_DEPTH_TEST)
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
@@ -92,7 +93,7 @@ def render():
 
     t = glfw.get_time()
 
-    # glRotatef(t*(180/np.pi),0,1,0)  # try to uncomment: rotate light
+    glRotatef(t*(180/np.pi),0,1,0)  # try to uncomment: rotate light
     lightPos = (3.,4.,5.,1.)    # try to change 4th element to 0. or 1.
     glLightfv(GL_LIGHT0, GL_POSITION, lightPos)
     glPopMatrix()
@@ -118,7 +119,7 @@ def render():
     glColor3ub(0, 0, 255) # glColor*() is ignored if lighting is enabled
 
     # drawCube_glVertex()
-    drawCube_glDrawArray()
+    drawCube_glDrawArray() 
     glPopMatrix()
 
     glDisable(GL_LIGHTING)

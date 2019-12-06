@@ -193,8 +193,8 @@ def render():
 
     t = glfw.get_time()
 
-    # glRotatef(t*(180/np.pi),0,1,0)  # try to uncomment: rotate light
-    lightPos = (3.,4.,5.,1.)    # try to change 4th element to 0. or 1.
+    glRotatef(t*(180/np.pi),0,1,0)  # try to uncomment: rotate light
+    lightPos = (3.,4.,5.,(np.sin(t) + 1) / 2)    # try to change 4th element to 0. or 1.
     glLightfv(GL_LIGHT0, GL_POSITION, lightPos)
     glPopMatrix()
 
